@@ -1,6 +1,5 @@
 lowercaseOutputName: true
 rules:
-  #kafka.connect:type=app-info,client-id="{clientid}"
   #kafka.consumer:type=app-info,client-id="{clientid}"
   #kafka.producer:type=app-info,client-id="{clientid}"
   - pattern: 'kafka.(.+)<type=app-info, client-id=(.+)><>start-time-ms'
@@ -18,6 +17,21 @@ rules:
       $3: "$4"
     help: "Kafka $1 JMX metric info version and commit-id"
     type: GAUGE
+  #kafka.connect:type=app-info
+  #kafka 3.x dropped client id from kafka.connect app-info
+  - pattern: 'kafka.connect<type=app-info><>start-time-ms: (.+)'
+    name: kafka_connect_start_time_seconds
+    help: "Kafka connect JMX metric start time seconds"
+    type: GAUGE
+    valueFactor: 0.001 
+  - pattern: 'kafka.connect<type=app-info><>(commit-id|version): (.+)'
+    name: kafka_connect_$1_info
+    value: 1
+    labels:
+      $1: "$2"
+    help: "Kafka connect JMX metric info version and commit-id"
+    type: GAUGE
+
 
   #kafka.producer:type=producer-topic-metrics,client-id="{clientid}",topic="{topic}"", partition="{partition}"
   #kafka.consumer:type=consumer-fetch-manager-metrics,client-id="{clientid}",topic="{topic}"", partition="{partition}"
